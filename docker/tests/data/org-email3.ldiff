@@ -1,0 +1,5 @@
+dn: o=warz.eu,ou=people,dc=example,dc=org
+description: The Warz company
+o: warz.eu
+objectclass: organization
+objectclass: top

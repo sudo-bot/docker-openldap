@@ -1,0 +1,17 @@
+dn: cn=John Pondu,ou=people,dc=example,dc=org
+cn: John Pondu
+givenname: john
+mail: john@mail.williamdes.eu.org
+mailalias: john.pondu@mail.williamdes.eu.org
+mailenabled: TRUE
+mailgidnumber: 5000
+mailhomedirectory: /var/mail/mail.williamdes.eu.org/john/
+mailstoragedirectory: maildir:/var/mail/mail.williamdes.eu.org/john/
+mailuidnumber: 5000
+objectclass: inetOrgPerson
+objectclass: top
+objectclass: PostfixBookMailAccount
+sn: Pondu
+uid: john
+sasluserpassword: {SSHA}QZc7w6vLnfcL7UYmG5J8mPkxkq2e71HI
+userpassword: {CRYPT}.mh2DdDDZZwIQ

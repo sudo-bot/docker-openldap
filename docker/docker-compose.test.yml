@@ -1,0 +1,36 @@
+version: "3.3"
+
+services:
+    openldap:
+        build: .
+        command: ldap
+        restart: on-failure:5
+        mem_limit: 256M
+        mem_reservation: 100M
+        healthcheck:
+            test: 'ldapwhoami -D "cn=$${LDAP_READONLY_USER_USERNAME}" -w "$${LDAP_READONLY_USER_PASSWORD}"'
+            start_period: 5s
+            interval: 10s
+            timeout: 5s
+            retries: 3
+        environment:
+            # 256 to enable debug
+            # See: https://www.openldap.org/doc/admin24/slapdconf2.html
+            LDAP_LOG_LEVEL: 0
+            LDAP_OPENLDAP_GID: 0
+            LDAP_OPENLDAP_UID: 0
+            LDAP_BASE_DN: "dc=example,dc=org"
+            LDAP_ADMIN_PASSWORD: "{SSHA}uFcXuY+bFdxQZktdAR2l163q6KR3Nc5e"
+            LDAP_CONFIG_PASSWORD: "{SSHA}V0MnvygRbzo3hg33X2DxycAxO5SvuOM5"
+            LDAP_MONITOR_PASSWORD: "{SSHA}1h+K1VIdptHytwoqDd+z+ozORIKmGvG3"
+            LDAP_READONLY_USER_USERNAME: monitor
+            LDAP_READONLY_USER_PASSWORD: monitor
+
+    sut:
+        depends_on:
+            openldap:
+                condition: service_healthy
+        build: .
+        volumes:
+          - ./tests/:/tests:ro
+        entrypoint: /tests/run.sh

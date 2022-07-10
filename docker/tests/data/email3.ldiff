@@ -1,0 +1,18 @@
+dn: mail=alice@warz.eu,o=warz.eu,ou=people,dc=example,dc=org
+cn: Alice Warz
+givenname: alice
+mail: alice@warz.eu
+mailalias: alice.warz@warz.eu
+mailalias: contact@warz.de
+mailenabled: TRUE
+mailgidnumber: 5000
+mailhomedirectory: /var/mail/warz.eu/alice/
+mailstoragedirectory: maildir:/var/mail/warz.eu/alice/
+mailuidnumber: 5000
+objectclass: inetOrgPerson
+objectclass: top
+objectclass: PostfixBookMailAccount
+sn: Warz
+uid: alice
+sasluserpassword: {SSHA}v6Gu/sKhI56c/RKxZ33IpDEwdjO4OVxl
+userpassword: {SSHA}v6Gu/sKhI56c/RKxZ33IpDEwdjO4OVxl
