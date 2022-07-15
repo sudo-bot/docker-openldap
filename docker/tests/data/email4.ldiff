@@ -14,5 +14,4 @@ objectclass: top
 objectclass: PostfixBookMailAccount
 sn: Warz
 uid: edwin
-authpassword: {CLEARTEXT}oHHGf7YyJSihb6ifSwNWZPtEGzijjp8
 userpassword: {CLEARTEXT}oHHGf7YyJSihb6ifSwNWZPtEGzijjp8

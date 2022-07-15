@@ -14,5 +14,4 @@ objectclass: top
 objectclass: PostfixBookMailAccount
 sn: Caldin
 uid: elana
-authpassword: {CRYPT}$1$$45BkvhHWOVXI2JDpvpn751
 userpassword: {CRYPT}$1$$45BkvhHWOVXI2JDpvpn751
