@@ -28,6 +28,12 @@ ldapadd -H ldap://openldap -D "cn=admin,dc=example,dc=org" -w admin < /tests/dat
 echo 'Seeding email 4'
 ldapadd -H ldap://openldap -D "cn=admin,dc=example,dc=org" -w admin < /tests/data/email4.ldiff
 
+echo 'Seeding org for email 5'
+ldapadd -H ldap://openldap -D "cn=admin,dc=example,dc=org" -w admin < /tests/data/org-email5.ldiff
+
+echo 'Seeding email 5'
+ldapadd -H ldap://openldap -D "cn=admin,dc=example,dc=org" -w admin < /tests/data/email5.ldiff
+
 echo 'Print results'
 ldapsearch -LLL -H ldap://openldap -D "cn=admin,dc=example,dc=org" -w admin -b "ou=people,dc=example,dc=org" '*'
 
@@ -52,3 +58,6 @@ echo 'Login as email 4'
 #ldapwhoami -H ldap://openldap -D "mail=edwin@warz.eu,o=warz.eu,ou=people,dc=example,dc=org" -w 'oHHGf7YyJSihb6ifSwNWZPtEGzijjp8'
 echo -e "\tUsing SASL auth"
 ldapwhoami -Q -H ldap://openldap -U edwin@warz.eu -w 'oHHGf7YyJSihb6ifSwNWZPtEGzijjp8'
+
+echo 'Login as email 5'
+ldapwhoami -H ldap://openldap -D "mail=elana@caldin.eu,o=caldin.eu,ou=people,dc=example,dc=org" -w 'bandedetsylish'

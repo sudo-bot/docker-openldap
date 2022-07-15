@@ -1,0 +1,5 @@
+dn: o=caldin.eu,ou=people,dc=example,dc=org
+description: The Calin familly
+o: caldin.eu
+objectclass: organization
+objectclass: top

@@ -1,0 +1,18 @@
+dn: mail=elana@caldin.eu,o=caldin.eu,ou=people,dc=example,dc=org
+cn: Elana Caldin
+givenname: elana
+mail: elana@caldin.eu
+mailalias: elana.caldin@caldin.eu
+mailalias: contact@caldin.de
+mailenabled: TRUE
+mailgidnumber: 5000
+mailhomedirectory: /var/mail/caldin.eu/elana/
+mailstoragedirectory: maildir:/var/mail/caldin.eu/elana/
+mailuidnumber: 5000
+objectclass: inetOrgPerson
+objectclass: top
+objectclass: PostfixBookMailAccount
+sn: Caldin
+uid: elana
+authpassword: {CRYPT}$1$$45BkvhHWOVXI2JDpvpn751
+userpassword: {CRYPT}$1$$45BkvhHWOVXI2JDpvpn751
