@@ -1,0 +1,23 @@
+command = "/ldap-config.sh"
+start-delay = "2s"
+stdout = "STDOUT"
+stderr = "STDERR"
+user = "root"
+working-directory = "/"
+start-after = ["ldap.toml", "sasl.toml"]
+
+[restart]
+strategy = "on-failure"
+backoff = "1s"
+attempts = 10
+
+[failure]
+successful-exit-code = [ 0]
+strategy = "shutdown"
+
+[termination]
+signal = "TERM"
+wait = "10s"
+
+[environment]
+keep-env = false

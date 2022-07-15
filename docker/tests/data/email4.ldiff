@@ -1,0 +1,18 @@
+dn: mail=edwin@warz.eu,o=warz.eu,ou=people,dc=example,dc=org
+cn: Edwin Warz
+givenname: edwin
+mail: edwin@warz.eu
+mailalias: edwin.warz@warz.eu
+mailalias: contact@warz.de
+mailenabled: TRUE
+mailgidnumber: 5000
+mailhomedirectory: /var/mail/warz.eu/edwin/
+mailstoragedirectory: maildir:/var/mail/warz.eu/edwin/
+mailuidnumber: 5000
+objectclass: inetOrgPerson
+objectclass: top
+objectclass: PostfixBookMailAccount
+sn: Warz
+uid: edwin
+authpassword: {CLEARTEXT}oHHGf7YyJSihb6ifSwNWZPtEGzijjp8
+userpassword: {CLEARTEXT}oHHGf7YyJSihb6ifSwNWZPtEGzijjp8

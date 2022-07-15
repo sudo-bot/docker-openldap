@@ -14,5 +14,5 @@ objectclass: top
 objectclass: PostfixBookMailAccount
 sn: Warz
 uid: alice
-sasluserpassword: {SSHA}v6Gu/sKhI56c/RKxZ33IpDEwdjO4OVxl
+authpassword: {SSHA}v6Gu/sKhI56c/RKxZ33IpDEwdjO4OVxl
 userpassword: {SSHA}v6Gu/sKhI56c/RKxZ33IpDEwdjO4OVxl

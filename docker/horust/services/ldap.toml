@@ -1,0 +1,26 @@
+command = "slapd -h 'ldap:/// ldapi:///' -d${LDAP_LOG_LEVEL} -u${LDAP_OPENLDAP_UID} -g${LDAP_OPENLDAP_GID}"
+start-delay = "2s"
+stdout = "STDOUT"
+stderr = "STDERR"
+user = "root"
+working-directory = "/"
+
+[restart]
+strategy = "on-failure"
+backoff = "1s"
+attempts = 10
+
+[healthiness]
+file-path = "/run/openldap/slapd.pid"
+max-failed = 10
+
+[failure]
+successful-exit-code = [ 0]
+strategy = "shutdown"
+
+[termination]
+signal = "TERM"
+wait = "10s"
+
+[environment]
+keep-env = true
