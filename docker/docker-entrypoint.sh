@@ -18,6 +18,9 @@ pluginviewer -a
 echo test | saslpasswd2 -n -p -c -u domain.org user0
 sasldblistusers2
 echo 'Replacing values with ENV values'
+sed -i "s|{{ LDAP_AUTH_BASE_DN }}|${LDAP_AUTH_BASE_DN}|" /etc/saslauthd.conf
+sed -i "s|{{ LDAP_BASE_DN }}|${LDAP_BASE_DN}|" /etc/saslauthd.conf
+sed -i "s|{{ LDAP_AUTH_BASE_DN }}|${LDAP_AUTH_BASE_DN}|" /etc/openldap/slapd.conf
 sed -i "s|{{ LDAP_BASE_DN }}|${LDAP_BASE_DN}|" /etc/openldap/slapd.conf
 sed -i "s|{{ LDAP_CONFIG_PASSWORD }}|${LDAP_CONFIG_PASSWORD}|" /etc/openldap/slapd.conf
 sed -i "s|{{ LDAP_ADMIN_PASSWORD }}|${LDAP_ADMIN_PASSWORD}|" /etc/openldap/slapd.conf
@@ -25,6 +28,9 @@ sed -i "s|{{ LDAP_MONITOR_PASSWORD }}|${LDAP_MONITOR_PASSWORD}|" /etc/openldap/s
 
 echo 'Checking if replacement worked'
 set -x
+grep -q -F "ldap_bind_dn: cn=admin,${LDAP_BASE_DN}" /etc/saslauthd.conf
+grep -q -F "ldap_search_base: ${LDAP_AUTH_BASE_DN}" /etc/saslauthd.conf
+grep -q -F ",${LDAP_AUTH_BASE_DN}" /etc/openldap/slapd.conf
 grep -q -F "suffix		\"${LDAP_BASE_DN}\"" /etc/openldap/slapd.conf
 grep -q -F "${LDAP_CONFIG_PASSWORD}" /etc/openldap/slapd.conf
 grep -q -F "${LDAP_ADMIN_PASSWORD}" /etc/openldap/slapd.conf

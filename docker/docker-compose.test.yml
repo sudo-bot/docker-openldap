@@ -20,6 +20,7 @@ services:
             LDAP_OPENLDAP_GID: 0
             LDAP_OPENLDAP_UID: 0
             LDAP_BASE_DN: "dc=example,dc=org"
+            LDAP_AUTH_BASE_DN: "ou=people,dc=example,dc=org"
             LDAP_ADMIN_PASSWORD: "{SSHA}uFcXuY+bFdxQZktdAR2l163q6KR3Nc5e"
             LDAP_CONFIG_PASSWORD: "{SSHA}V0MnvygRbzo3hg33X2DxycAxO5SvuOM5"
             LDAP_MONITOR_PASSWORD: "{SSHA}1h+K1VIdptHytwoqDd+z+ozORIKmGvG3"
