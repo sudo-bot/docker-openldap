@@ -66,6 +66,7 @@ RUN apk add --no-cache --update \
     apk add --no-cache --allow-untrusted \
         /root/packages/x86_64/cyrus-sasl-${CYRUS_SASL_VERSION}.apk \
         /root/packages/x86_64/cyrus-sasl-ldapdb-${CYRUS_SASL_VERSION}.apk \
+        /root/packages/x86_64/cyrus-sasl-sql-${CYRUS_SASL_VERSION}.apk \
         /root/packages/x86_64/cyrus-sasl-scram-${CYRUS_SASL_VERSION}.apk && \
     mkdir -p /var/run/saslauthd/
 

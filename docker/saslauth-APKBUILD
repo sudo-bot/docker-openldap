@@ -19,6 +19,7 @@ subpackages="
 	$pkgname-crammd5:_plugin
 	$pkgname-digestmd5:_plugin
 	$pkgname-ldapdb:_plugin
+	$pkgname-sql:_plugin
 	"
 # use heimdal to avoid circular dep: cyrus-sasl -> krb5 -> openldap -> cyrus-sasl
 makedepends="
@@ -55,8 +56,6 @@ prepare() {
 }
 
 build() {
-	# --enable-sql will add support for sqlite
-	# And --disable-sql will remove requirements for MySQL or PostgresSQL libs
 	./configure \
 		--build=$CBUILD \
 		--host=$CHOST \
@@ -70,6 +69,10 @@ build() {
 		--with-dblib=gdbm \
 		--with-saslauthd=/run/saslauthd \
 		--without-pwcheck \
+		--without-mysql \
+		--without-pgsql \
+		--without-sqlite \
+		--with-sqlite3=/usr/lib \
         --with-authdaemond \
 		--with-devrandom=/dev/urandom \
 		--with-sqlite3=/usr/lib \
@@ -85,7 +88,6 @@ build() {
         --enable-srp \
 		--enable-otp \
 		--enable-sql \
-		--disable-sql \
         --disable-passdss \
         --disable-httpform \
         --disable-auth-sasldb \
