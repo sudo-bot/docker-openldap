@@ -1,0 +1,128 @@
+# Contributor: Leonardo Arena <rnalrd@alpinelinux.org>
+# Maintainer: Natanael Copa <ncopa@alpinelinux.org>
+# Source: https://gitlab.alpinelinux.org/alpine/aports/-/raw/6ac417c97348b55bb824a88dd8a6dff24c87f487/main/cyrus-sasl/APKBUILD
+pkgname=cyrus-sasl
+pkgver=2.1.28
+pkgrel=0
+pkgdesc="Cyrus Simple Authentication Service Layer (SASL)"
+url="https://www.cyrusimap.org/sasl/"
+arch="all"
+license="custom"
+options="!check"  # No test suite.
+subpackages="
+	$pkgname-static
+	$pkgname-dev
+	$pkgname-doc
+	$pkgname-openrc
+	libsasl
+	$pkgname-scram:_plugin
+	$pkgname-crammd5:_plugin
+	$pkgname-digestmd5:_plugin
+	$pkgname-ldapdb:_plugin
+	"
+# use heimdal to avoid circular dep: cyrus-sasl -> krb5 -> openldap -> cyrus-sasl
+makedepends="
+	gdbm-dev
+	openssl1.1-compat-dev
+	py3-sphinx
+	sqlite-static
+	openldap-dev
+    linux-pam-dev
+
+	automake
+	autoconf
+	libtool
+	"
+source="https://github.com/cyrusimap/cyrus-sasl/releases/download/cyrus-sasl-$pkgver/cyrus-sasl-$pkgver.tar.gz
+	saslauthd.initd
+	"
+
+# secfixes:
+#   2.1.28-r0:
+#     - CVE-2022-24407
+#   2.1.27-r5:
+#     - CVE-2019-19906
+#   2.1.26-r7:
+#     - CVE-2013-4122
+#   0:
+#     - CVE-2020-8032
+
+
+prepare() {
+	default_prepare
+	aclocal --install
+	autoreconf -vfi -Wno-portability
+}
+
+build() {
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--localstatedir=/var \
+		--mandir=/usr/share/man \
+		--with-plugindir=/usr/lib/sasl2 \
+		--with-configdir=/etc/sasl2 \
+		--with-rc4 \
+		--with-dblib=gdbm \
+		--with-saslauthd=/run/saslauthd \
+		--without-pwcheck \
+        --with-authdaemond \
+		--with-devrandom=/dev/urandom \
+		--with-sqlite3 \
+		--with-ldap \
+        --with-pam \
+		--enable-static \
+		--enable-shared \
+		--enable-ldapdb \
+		--enable-anon \
+		--enable-cram \
+		--enable-digest \
+		--enable-plain \
+        --enable-srp \
+		--enable-otp \
+        --disable-passdss \
+        --disable-httpform \
+        --disable-auth-sasldb \
+		--disable-login \
+		--disable-ntlm \
+		--disable-krb4 \
+		--disable-gssapi \
+		--disable-alwaystrue
+	make
+}
+
+package() {
+	make -j1 DESTDIR="$pkgdir" install
+	install -D -m644 COPYING "$pkgdir"/usr/share/licenses/$pkgname/COPYING
+	install -Dm755 "$srcdir"/saslauthd.initd "$pkgdir"/etc/init.d/saslauthd
+}
+
+_plugin() {
+	depends=
+	local plugin=${subpkgname/$pkgname-/}
+	replaces="libsasl"
+	pkgdesc="Cyrus SASL plugin for $plugin"
+	amove usr/lib/sasl2/lib$plugin.so*
+}
+
+libsasl() {
+	depends=
+	pkgdesc="Cyrus Simple Authentication and Security Layer (SASL) library"
+	replaces="cyrus-sasl-plain"
+
+	local lib=
+    # anonymous sasldb plain
+	for lib in anonymous plain; do
+		amove usr/lib/sasl2/*$lib*.so*
+	done
+	amove usr/lib/libsasl*.so.*
+    ls -lahR /workspace/pkg/libsasl/usr/lib
+    exit 1
+}
+
+sha512sums="
+db15af9079758a9f385457a79390c8a7cd7ea666573dace8bf4fb01bb4b49037538d67285727d6a70ad799d2e2318f265c9372e2427de9371d626a1959dd6f78  cyrus-sasl-2.1.28.tar.gz
+f76bfb61567172428cdbc1ed900d5e0b6e66afc38118db6ba0e2fd8ba01956ad896e56463b2249bdc46d8725384f1b975a2af3601c0735327d3f8bc26ce1ed75  saslauthd.initd
+"

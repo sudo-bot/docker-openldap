@@ -12,19 +12,19 @@ FROM alpine:3.16 as build-env-sasl
 
 WORKDIR /workspace
 
-RUN apk add --no-cache --update alpine-sdk curl && \
-    curl -L -o /workspace/APKBUILD https://gitlab.alpinelinux.org/alpine/aports/-/raw/6ac417c97348b55bb824a88dd8a6dff24c87f487/main/cyrus-sasl/APKBUILD && \
+COPY saslauth-APKBUILD /workspace/APKBUILD
+RUN apk add --no-cache --update alpine-sdk && \
     curl -L -o /workspace/saslauthd.initd https://gitlab.alpinelinux.org/alpine/aports/-/raw/6ac417c97348b55bb824a88dd8a6dff24c87f487/main/cyrus-sasl/saslauthd.initd && \
     abuild-keygen -a -n && \
-    apk add --no-cache gdbm-dev openssl1.1-compat-dev heimdal-dev py3-sphinx sqlite-dev openldap-dev automake autoconf libtool && \
+    apk add --no-cache gdbm-dev openssl1.1-compat-dev linux-pam-dev py3-sphinx sqlite-static openldap-dev automake autoconf libtool && \
     abuild -F
 
 FROM alpine:3.16
 
 # See: https://www.openldap.org/software/release/changes.html
-# See: https://git.openldap.org/openldap/openldap/-/tree/OPENLDAP_REL_ENG_2_6_2
+# See: https://git.openldap.org/openldap/openldap/-/tree/OPENLDAP_REL_ENG_2_6_3
 # See: https://pkgs.alpinelinux.org/packages?name=openldap&branch=edge
-ARG RELEASE_VERSION=2.6.2-r0
+ARG RELEASE_VERSION=2.6.3-r0
 ARG CYRUS_SASL_VERSION=2.1.28-r0
 
 # Metadata params
