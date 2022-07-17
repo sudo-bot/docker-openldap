@@ -25,7 +25,7 @@ makedepends="
 	gdbm-dev
 	openssl1.1-compat-dev
 	py3-sphinx
-	sqlite-static
+	sqlite-dev
 	openldap-dev
     linux-pam-dev
 
@@ -70,7 +70,7 @@ build() {
 		--without-pwcheck \
         --with-authdaemond \
 		--with-devrandom=/dev/urandom \
-		--with-sqlite3 \
+		--with-sqlite3=/usr/lib \
 		--with-ldap \
         --with-pam \
 		--enable-static \
@@ -118,8 +118,6 @@ libsasl() {
 		amove usr/lib/sasl2/*$lib*.so*
 	done
 	amove usr/lib/libsasl*.so.*
-    ls -lahR /workspace/pkg/libsasl/usr/lib
-    exit 1
 }
 
 sha512sums="

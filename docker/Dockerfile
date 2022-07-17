@@ -16,7 +16,7 @@ COPY saslauth-APKBUILD /workspace/APKBUILD
 RUN apk add --no-cache --update alpine-sdk && \
     curl -L -o /workspace/saslauthd.initd https://gitlab.alpinelinux.org/alpine/aports/-/raw/6ac417c97348b55bb824a88dd8a6dff24c87f487/main/cyrus-sasl/saslauthd.initd && \
     abuild-keygen -a -n && \
-    apk add --no-cache gdbm-dev openssl1.1-compat-dev linux-pam-dev py3-sphinx sqlite-static openldap-dev automake autoconf libtool && \
+    apk add --no-cache gdbm-dev openssl1.1-compat-dev linux-pam-dev py3-sphinx sqlite-dev openldap-dev automake autoconf libtool && \
     abuild -F
 
 FROM alpine:3.16
