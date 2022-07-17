@@ -55,6 +55,8 @@ prepare() {
 }
 
 build() {
+	# --enable-sql will add support for sqlite
+	# And --disable-sql will remove requirements for MySQL or PostgresSQL libs
 	./configure \
 		--build=$CBUILD \
 		--host=$CHOST \
@@ -82,6 +84,8 @@ build() {
 		--enable-plain \
         --enable-srp \
 		--enable-otp \
+		--enable-sql \
+		--disable-sql \
         --disable-passdss \
         --disable-httpform \
         --disable-auth-sasldb \
