@@ -77,7 +77,7 @@ COPY horust/ /etc/horust/
 COPY saslauthd.conf syslog-ng.conf /etc/
 COPY slapd.conf /etc/openldap/
 COPY postfix-book.schema /etc/openldap/schema-custom/
-COPY docker-entrypoint.sh ldap-config.sh /
+COPY docker-entrypoint.sh /
 
 # Metadata
 LABEL org.label-schema.vendor="Sudo-Bot" \
