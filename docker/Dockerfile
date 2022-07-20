@@ -13,11 +13,17 @@ FROM alpine:3.16 as build-env-sasl
 WORKDIR /workspace
 
 COPY saslauth-APKBUILD /workspace/APKBUILD
+ENV RSA_PRIVATE_KEY_NAME="sudo-bot@wdes.fr-temp.rsa"
+
 RUN apk add --no-cache --update alpine-sdk && \
-    curl -L -o /workspace/saslauthd.initd https://gitlab.alpinelinux.org/alpine/aports/-/raw/6ac417c97348b55bb824a88dd8a6dff24c87f487/main/cyrus-sasl/saslauthd.initd && \
+    mkdir /root/.abuild && \
+    echo -e '\nPACKAGER="Sudo Bot <sudo-bot@wdes.fr>"' >> /root/.abuild/abuild.conf && \
     abuild-keygen -a -n && \
     apk add --no-cache gdbm-dev openssl1.1-compat-dev linux-pam-dev py3-sphinx sqlite-dev openldap-dev automake autoconf libtool && \
-    abuild -F
+    abuild -F && \
+    mv /root/.abuild/sudo-bot@wdes.fr-*.rsa.pub /root/packages/${RSA_PRIVATE_KEY_NAME}.pub && \
+    mv /root/.abuild/sudo-bot@wdes.fr-*.rsa /root/packages/${RSA_PRIVATE_KEY_NAME} && \
+    abuild-sign -k /root/packages/${RSA_PRIVATE_KEY_NAME} /root/packages/x86_64/APKINDEX.tar.gz
 
 FROM alpine:3.16
 
@@ -35,7 +41,7 @@ ENV LDAP_LOG_LEVEL=0
 ENV LDAP_NOFILE=1024
 
 COPY --from=build-env /workspace/target/release/horust /sbin/horust
-COPY --from=build-env-sasl /root/packages /root/packages
+COPY --from=build-env-sasl /root/packages/ /root/packages/
 RUN apk add --no-cache --update \
     # https://github.com/mischov/meeseeks/issues/98#issuecomment-636615680
     openssl libgcc \
@@ -63,19 +69,24 @@ RUN apk add --no-cache --update \
         mkdir /var/lib/openldap/run && \
         touch /var/lib/openldap/run/ldapi && \
     /sbin/horust --version && \
-    apk add --no-cache --allow-untrusted \
-        /root/packages/x86_64/cyrus-sasl-${CYRUS_SASL_VERSION}.apk \
-        /root/packages/x86_64/cyrus-sasl-ldapdb-${CYRUS_SASL_VERSION}.apk \
-        /root/packages/x86_64/cyrus-sasl-sql-${CYRUS_SASL_VERSION}.apk \
-        /root/packages/x86_64/cyrus-sasl-scram-${CYRUS_SASL_VERSION}.apk && \
+    # Add dependencies that the next step can not add without a network repo
+    apk add --no-cache linux-pam sqlite-libs && \
+    echo '/root/packages/' > /root/packages/repositories && \
+    apk add --allow-untrusted --keys-dir=/root/packages/ --no-network --no-cache --repositories-file=/root/packages/repositories \
+        cyrus-sasl=${CYRUS_SASL_VERSION} \
+        cyrus-sasl-sql=${CYRUS_SASL_VERSION} \
+        cyrus-sasl-static=${CYRUS_SASL_VERSION} \
+        cyrus-sasl-srp=${CYRUS_SASL_VERSION} && \
+    rm -rv /root/packages/* && \
     mkdir -p /var/run/saslauthd/
 
-COPY sasl2-slapd.conf /etc/sasl2/slapd.conf
-COPY horust/ /etc/horust/
 # See: https://github.com/p42/syslog-alpine-docker
 # https://openldap-technical.openldap.narkive.com/VHoH0O93/can-t-get-slapd-to-do-pass-through-authentication
 # Because of --with-configdir, thanks Brent Bice 12 years ago !
+COPY sasl2-slapd.conf /etc/sasl2/slapd.conf
+COPY horust/ /etc/horust/
 COPY saslauthd.conf syslog-ng.conf /etc/
+
 COPY slapd.conf /etc/openldap/
 COPY postfix-book.schema /etc/openldap/schema-custom/
 COPY docker-entrypoint.sh /

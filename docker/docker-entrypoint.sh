@@ -13,10 +13,6 @@ set -eu
 # See: https://github.com/moby/moby/issues/8231
 ulimit -n $LDAP_NOFILE
 
-pluginviewer -a
-
-echo test | saslpasswd2 -n -p -c -u domain.org user0
-sasldblistusers2
 echo 'Replacing values with ENV values'
 sed -i "s|{{ LDAP_AUTH_BASE_DN }}|${LDAP_AUTH_BASE_DN}|" /etc/saslauthd.conf
 sed -i "s|{{ LDAP_BASE_DN }}|${LDAP_BASE_DN}|" /etc/saslauthd.conf

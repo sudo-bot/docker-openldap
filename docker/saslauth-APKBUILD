@@ -1,6 +1,6 @@
 # Contributor: Leonardo Arena <rnalrd@alpinelinux.org>
 # Maintainer: Natanael Copa <ncopa@alpinelinux.org>
-# Source: https://gitlab.alpinelinux.org/alpine/aports/-/raw/6ac417c97348b55bb824a88dd8a6dff24c87f487/main/cyrus-sasl/APKBUILD
+# Source: https://gitlab.alpinelinux.org/alpine/aports/-/merge_requests/36232
 pkgname=cyrus-sasl
 pkgver=2.1.28
 pkgrel=0
@@ -13,12 +13,8 @@ subpackages="
 	$pkgname-static
 	$pkgname-dev
 	$pkgname-doc
-	$pkgname-openrc
 	libsasl
-	$pkgname-scram:_plugin
-	$pkgname-crammd5:_plugin
-	$pkgname-digestmd5:_plugin
-	$pkgname-ldapdb:_plugin
+	$pkgname-srp:_plugin
 	$pkgname-sql:_plugin
 	"
 # use heimdal to avoid circular dep: cyrus-sasl -> krb5 -> openldap -> cyrus-sasl
@@ -35,7 +31,6 @@ makedepends="
 	libtool
 	"
 source="https://github.com/cyrusimap/cyrus-sasl/releases/download/cyrus-sasl-$pkgver/cyrus-sasl-$pkgver.tar.gz
-	saslauthd.initd
 	"
 
 # secfixes:
@@ -75,26 +70,29 @@ build() {
 		--with-sqlite3=/usr/lib \
         --with-authdaemond \
 		--with-devrandom=/dev/urandom \
-		--with-sqlite3=/usr/lib \
 		--with-ldap \
         --with-pam \
 		--enable-static \
 		--enable-shared \
-		--enable-ldapdb \
 		--enable-anon \
-		--enable-cram \
-		--enable-digest \
 		--enable-plain \
         --enable-srp \
-		--enable-otp \
+        --enable-srp-setpass \
 		--enable-sql \
+		--disable-otp \
+        --disable-sia \
+		--disable-digest \
+		--disable-cram \
+		--disable-scram \
         --disable-passdss \
+        --disable-anonymous \
         --disable-httpform \
         --disable-auth-sasldb \
 		--disable-login \
 		--disable-ntlm \
 		--disable-krb4 \
 		--disable-gssapi \
+		--disable-ldapdb \
 		--disable-alwaystrue
 	make
 }
@@ -102,7 +100,6 @@ build() {
 package() {
 	make -j1 DESTDIR="$pkgdir" install
 	install -D -m644 COPYING "$pkgdir"/usr/share/licenses/$pkgname/COPYING
-	install -Dm755 "$srcdir"/saslauthd.initd "$pkgdir"/etc/init.d/saslauthd
 }
 
 _plugin() {
@@ -128,5 +125,4 @@ libsasl() {
 
 sha512sums="
 db15af9079758a9f385457a79390c8a7cd7ea666573dace8bf4fb01bb4b49037538d67285727d6a70ad799d2e2318f265c9372e2427de9371d626a1959dd6f78  cyrus-sasl-2.1.28.tar.gz
-f76bfb61567172428cdbc1ed900d5e0b6e66afc38118db6ba0e2fd8ba01956ad896e56463b2249bdc46d8725384f1b975a2af3601c0735327d3f8bc26ce1ed75  saslauthd.initd
 "
