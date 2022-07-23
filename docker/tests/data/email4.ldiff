@@ -14,5 +14,5 @@ objectclass: top
 objectclass: PostfixBookMailAccount
 sn: Warz
 uid: edwin
-userpassword: {SASL}edwin.warz@warz.eu
+userpassword: {SASL}edwin@warz.eu
 cmusaslsecretSRP: AAABGgAFU0hBLTEBADad+AuE7ROrSkZ9sLhF/Ww5tf8lhb4zKuMhOIk7rFJrK+q780xYoeoEdhJBQKbxC9O354E4qB2NBiipUs6lS/OhOK/IHlHg63JKJZBXcUSTcKjLYcl6xyRbXgZfvKQQpsMb0B/D/5x1p7EC+YuaOqvKACpWfPrNU8emeVhAAhxhiXE1QGCNfY5bWkXYQQDTLUqzKf6d43pd8rpnExM1j4+1XepcGtn2+gQD1JLwA3deF6AhZ6xSEAZIaJBUdIJnBO1YGWyn+1m7BVdK0CTSx49bFwGdtjQtB/yzpFAJIaiH/l09PGfhyBymOpA50ofz3QtbcRFux+4vrwuuodfoJYcQ+7QyagkkczUJKJLljZnNtQ==
