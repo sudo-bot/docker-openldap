@@ -13,4 +13,4 @@ objectclass: top
 objectclass: PostfixBookMailAccount
 sn: Pondu
 uid: john
-userpassword: {CRYPT}.mh2DdDDZZwIQ
+userpassword: {CRYPT}$1$8EERXtt2$lLI.ouW/cGMYcoF1GqGXC0
