@@ -5,7 +5,7 @@ stdout = "STDOUT"
 stderr = "STDERR"
 user = "root"
 working-directory = "/"
-start-after = ["ldap.toml", "syslog.toml"]
+start-after = ["syslog.toml"]
 
 [restart]
 strategy = "on-failure"

@@ -4,6 +4,7 @@ stdout = "STDOUT"
 stderr = "STDERR"
 user = "root"
 working-directory = "/"
+start-after = ["sasl.toml"]
 
 [restart]
 strategy = "on-failure"
