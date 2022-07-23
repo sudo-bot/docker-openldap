@@ -1,0 +1,17 @@
+dn: mail=elon@caldin.eu,o=caldin.eu,ou=people,dc=example,dc=org
+cn: Elon Caldin
+givenname: elon
+mail: elon@caldin.eu
+mailalias: elon.caldin@caldin.eu
+mailalias: musk@caldin.de
+mailenabled: TRUE
+mailgidnumber: 5000
+mailhomedirectory: /var/mail/caldin.eu/elon/
+mailstoragedirectory: maildir:/var/mail/caldin.eu/elon/
+mailuidnumber: 5000
+objectclass: inetOrgPerson
+objectclass: top
+objectclass: PostfixBookMailAccount
+sn: Caldin
+uid: elon
+userpassword: {SSHA}GA1/ggm6DAJ2AyJzJqAZsLS7YbsKklVm
