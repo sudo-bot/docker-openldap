@@ -1,0 +1,25 @@
+From 61e358da45d1740a722058d74aaecde76ae0abb0 Mon Sep 17 00:00:00 2001
+From: Howard Chu <hyc@symas.com>
+Date: Sat, 23 Jul 2022 19:51:42 +0100
+Subject: [PATCH] Fix SRP setpass
+
+Wrong argument to MakeBuffer. Fixes #740.
+
+Signed-off-by: Howard Chu <hyc@symas.com>
+---
+ plugins/srp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/plugins/srp.c b/plugins/srp.c
+index 7cf36c27..67bee323 100644
+--- a/plugins/srp.c
++++ b/plugins/srp.c
+@@ -2296,7 +2296,7 @@ static int srp_setpass(void *glob_context __attribute__((unused)),
+ 	
+ 	r = MakeBuffer(text->utils, &text->out_buf, &text->out_buf_len,
+ 		       &bufferlen, "%s%m%o",
+-		       server_mda->name, &v, saltlen, salt);
++		       server_mda->name, v, saltlen, salt);
+ 	
+ 	if (r) {
+ 	    sparams->utils->seterror(sparams->utils->conn, 0, 

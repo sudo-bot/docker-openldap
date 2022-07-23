@@ -13,6 +13,7 @@ FROM alpine:3.16 as build-env-sasl
 WORKDIR /workspace
 
 COPY saslauth-APKBUILD /workspace/APKBUILD
+COPY fix-srp-setpass.patch /workspace/fix-srp-setpass.patch
 ENV RSA_PRIVATE_KEY_NAME="sudo-bot@wdes.fr-temp.rsa"
 
 RUN apk add --no-cache --update alpine-sdk && \
@@ -74,7 +75,6 @@ RUN apk add --no-cache --update \
     echo '/root/packages/' > /root/packages/repositories && \
     apk add --allow-untrusted --keys-dir=/root/packages/ --no-network --no-cache --repositories-file=/root/packages/repositories \
         cyrus-sasl=${CYRUS_SASL_VERSION} \
-        cyrus-sasl-sql=${CYRUS_SASL_VERSION} \
         cyrus-sasl-static=${CYRUS_SASL_VERSION} \
         cyrus-sasl-srp=${CYRUS_SASL_VERSION} && \
     rm -rv /root/packages/* && \

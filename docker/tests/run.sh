@@ -53,11 +53,14 @@ ldapwhoami -H ldap://openldap -D "cn=Cyrielle Pondu,ou=people,dc=example,dc=org"
 echo 'Login as email 3'
 ldapwhoami -H ldap://openldap -D "mail=alice@warz.eu,o=warz.eu,ou=people,dc=example,dc=org" -w 'oHHGf7YyJSihb6ifSwNWZPtEGzijjp8'
 
+# -a slapd will make it use slapd.conf in the plugin config folder
+#echo "oHHGf7YyJSihb6ifSwNWZPtEGzijjp8" | saslpasswd2 -a slapd -n -p -c -u warz.eu edwin@warz.eu
+
 echo 'Login as email 4'
-#echo -e "\tUsing simple auth"
-#ldapwhoami -H ldap://openldap -D "mail=edwin@warz.eu,o=warz.eu,ou=people,dc=example,dc=org" -w 'oHHGf7YyJSihb6ifSwNWZPtEGzijjp8'
 echo -e "\tUsing SASL auth"
 ldapwhoami -Q -H ldap://openldap -U edwin@warz.eu -w 'oHHGf7YyJSihb6ifSwNWZPtEGzijjp8'
+echo -e "\tUsing simple auth"
+ldapwhoami -H ldap://openldap -D "mail=edwin@warz.eu,o=warz.eu,ou=people,dc=example,dc=org" -w 'oHHGf7YyJSihb6ifSwNWZPtEGzijjp8'
 
 echo 'Login as email 5'
 ldapwhoami -H ldap://openldap -D "mail=elana@caldin.eu,o=caldin.eu,ou=people,dc=example,dc=org" -w 'bandedetsylish'
