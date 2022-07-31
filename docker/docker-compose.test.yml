@@ -7,6 +7,8 @@ services:
         restart: on-failure:5
         mem_limit: 256M
         mem_reservation: 100M
+        #volumes:
+        #  - ./tests/data/db.sqlite:/data/db.sqlite
         healthcheck:
             test: 'ldapwhoami -D "cn=$${LDAP_READONLY_USER_USERNAME}" -w "$${LDAP_READONLY_USER_PASSWORD}"'
             start_period: 5s
@@ -16,7 +18,7 @@ services:
         environment:
             # 256 to enable debug
             # See: https://www.openldap.org/doc/admin24/slapdconf2.html
-            LDAP_LOG_LEVEL: 0
+            LDAP_LOG_LEVEL: 1
             LDAP_OPENLDAP_GID: 0
             LDAP_OPENLDAP_UID: 0
             LDAP_BASE_DN: "dc=example,dc=org"
@@ -26,6 +28,20 @@ services:
             LDAP_MONITOR_PASSWORD: "{SSHA}1h+K1VIdptHytwoqDd+z+ozORIKmGvG3"
             LDAP_READONLY_USER_USERNAME: monitor
             LDAP_READONLY_USER_PASSWORD: monitor
+            # SSL setting
+            LDAP_TLS_CA_CRT_FILENAME: "/data/ca.pem"
+            LDAP_TLS_CRT_FILENAME: "/data/server-cert.pem"
+            LDAP_TLS_KEY_FILENAME: "/data/server-key.pem"
+            #LDAP_TLS_CA_CRT_FILENAME: "ca.cer"
+            LDAP_TLS_CIPHER_SUITE: "HIGH:MEDIUM:-SSLv2"
+            # never | allow | try | demand
+            LDAP_TLS_VERIFY_CLIENT: "try"
+            # Add ldaps:/// to SSL listen
+            LDAP_LISTEN_URLS: "ldap:/// ldapi:/// ldaps:///"
+        volumes:
+          - ./tests/data/ca.pem:/data/ca.pem:ro
+          - ./tests/data/server-cert.pem:/data/server-cert.pem:ro
+          - ./tests/data/server-key.pem:/data/server-key.pem:ro
 
     sut:
         depends_on:
@@ -34,4 +50,8 @@ services:
         build: .
         volumes:
           - ./tests/:/tests:ro
+          - ./tests/data/ca.pem:/data/ca.pem:ro
         entrypoint: /tests/run.sh
+        environment:
+            LDAPTLS_CACERT: /data/ca.pem
+            LDAPTLS_REQCERT: hard

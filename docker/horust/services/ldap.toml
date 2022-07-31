@@ -1,4 +1,4 @@
-command = "slapd -h 'ldap:/// ldapi:///' -d${LDAP_LOG_LEVEL} -u${LDAP_OPENLDAP_UID} -g${LDAP_OPENLDAP_GID}"
+command = "slapd -h \"${LDAP_LISTEN_URLS:-ldap:/// ldapi:///}\" -d${LDAP_LOG_LEVEL} -u${LDAP_OPENLDAP_UID} -g${LDAP_OPENLDAP_GID}"
 start-delay = "2s"
 stdout = "STDOUT"
 stderr = "STDERR"

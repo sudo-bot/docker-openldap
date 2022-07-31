@@ -84,6 +84,10 @@ echo -e "\tUsing simple auth"
 ldapwhoami -H ldap://openldap -D "mail=edwin@warz.eu,o=warz.eu,ou=people,dc=example,dc=org" -w 'oHHGf7YyJSihb6ifSwNWZPtEGzijjp8'
 
 echo 'Login as email 5'
+echo -e "\tUsing secure STARTTLS auth"
+ldapwhoami -ZZ -H ldap://openldap -D "mail=elana@caldin.eu,o=caldin.eu,ou=people,dc=example,dc=org" -w 'bandedetsylish'
+echo -e "\tUsing secure SSL auth"
+ldapwhoami -H ldaps://openldap -D "mail=elana@caldin.eu,o=caldin.eu,ou=people,dc=example,dc=org" -w 'bandedetsylish'
 echo -e "\tUsing simple auth"
 ldapwhoami -H ldap://openldap -D "mail=elana@caldin.eu,o=caldin.eu,ou=people,dc=example,dc=org" -w 'bandedetsylish'
 echo -e "\tUsing SASL auth"
