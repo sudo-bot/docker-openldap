@@ -27,7 +27,7 @@ jobs:
               env:
                 DOCKER_BUILDKIT: 1
                 PLATFORM: "${{ matrix.platform }}"
-            - name: Build docker image
+            - name: Test docker image
               run: make test
               env:
                 DOCKER_BUILDKIT: 1
