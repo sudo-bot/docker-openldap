@@ -40,10 +40,14 @@ jobs:
         - name: Build docker image
           run: make docker-build
           env:
+            # See: https://github.com/docker/buildx/issues/59
+            ACTION: push
             DOCKER_BUILDKIT: 1
 
         - name: Test docker image
           run: make test
+          # Anyway the image is pushed ... because of the buildx issue
+          continue-on-error: true
           env:
             DOCKER_BUILDKIT: 1
             COMPOSE_DOCKER_CLI_BUILD: 1
@@ -56,6 +60,8 @@ jobs:
         #    private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
         #    private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
 
+        - name: Pull multi-platform image pushed by Docker buildx
+          run: docker pull $IMAGE_TAG
         - name: Push to GHCR
           run: make docker-push
         - name: Tag for GHCR
