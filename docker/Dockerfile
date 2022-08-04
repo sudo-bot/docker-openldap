@@ -24,6 +24,29 @@ RUN echo "Building arch: ${TARGETARCH}, variant: ${TARGETVARIANT} for ${TARGETPL
 
 # Because rust:1.62-alpine3.16 does not have a build for arm/v7 but arm32v7/rust:1.62-alpine3.16 has it
 # fetch the vendor with the builder platform to avoid qemu issues (https://github.com/docker/buildx/issues/395)
+FROM --platform=x86_64 blackdex/rust-musl:aarch64-musl-stable-1.62.1  as build-env-aarch64-musl
+
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
+ARG TARGETARCH
+ARG TARGETVARIANT
+
+WORKDIR /workspace
+
+ADD https://github.com/FedericoPonzi/Horust/archive/c6a4cedb5f53836f14d12fd809272fdac9c8969b.tar.gz Horust.tar.gz
+RUN echo "Building arch: ${TARGETARCH}, variant: ${TARGETVARIANT} for ${TARGETPLATFORM} on ${BUILDPLATFORM}" && \
+    if [ "${TARGETARCH}" = "arm64" ]; then \
+        tar -C ./ --strip-components=1 -xzf ./Horust.tar.gz; \
+        # https://users.rust-lang.org/t/sigsegv-with-program-linked-against-openssl-in-an-alpine-container/52172
+        RUSTFLAGS="-C target-feature=-crt-static" cargo build --release --target=aarch64-unknown-linux-musl; \
+        mv /workspace/target/aarch64-unknown-linux-musl/release/horust /workspace/horust_aarch64; \
+    else \
+        # provide a fake file for Docker copy to suceess
+        touch /workspace/horust_aarch64; \
+    fi
+
+# Because rust:1.62-alpine3.16 does not have a build for arm/v7 but arm32v7/rust:1.62-alpine3.16 has it
+# fetch the vendor with the builder platform to avoid qemu issues (https://github.com/docker/buildx/issues/395)
 FROM --platform=x86_64 blackdex/rust-musl:armv7-musleabihf-stable-1.62.1 as build-env-horust
 
 ARG TARGETPLATFORM
@@ -34,6 +57,7 @@ ARG TARGETVARIANT
 WORKDIR /workspace
 
 COPY --from=build-env-x86_64-musl /workspace/target/release/horust /workspace/horust_x86_64
+COPY --from=build-env-aarch64-musl /workspace/horust_aarch64 /workspace/horust_aarch64
 
 ADD https://github.com/FedericoPonzi/Horust/archive/c6a4cedb5f53836f14d12fd809272fdac9c8969b.tar.gz Horust.tar.gz
 RUN echo "Building arch: ${TARGETARCH}, variant: ${TARGETVARIANT} for ${TARGETPLATFORM} on ${BUILDPLATFORM}" && \
@@ -42,6 +66,8 @@ RUN echo "Building arch: ${TARGETARCH}, variant: ${TARGETVARIANT} for ${TARGETPL
         # https://users.rust-lang.org/t/sigsegv-with-program-linked-against-openssl-in-an-alpine-container/52172
         RUSTFLAGS="-C target-feature=-crt-static" cargo build --release --target=armv7-unknown-linux-musleabihf; \
         mv /workspace/target/armv7-unknown-linux-musleabihf/release/horust /workspace/horust; \
+    elif [ "${TARGETARCH}${TARGETVARIANT}" = "arm64" ]; then \
+        mv /workspace/horust_aarch64 /workspace/horust; \
     else \
         mv /workspace/horust_x86_64 /workspace/horust; \
     fi
