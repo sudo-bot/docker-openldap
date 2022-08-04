@@ -8,11 +8,29 @@ on: [push]
 jobs:
     build-image:
         runs-on: ubuntu-latest
-        name: Build and test docker image
+        name: Build and test docker image (${{ matrix.platform }})
+        strategy:
+            fail-fast: false
+            matrix:
+                # Base image only has amd64
+                platform: ["linux/amd64", "linux/arm/v7"]
         steps:
             - name: Checkout repository
               uses: actions/checkout@v3
-            - name: Build image
+            # https://github.com/docker/setup-qemu-action
+            - name: Set up QEMU
+              uses: docker/setup-qemu-action@v1
+            # https://github.com/docker/setup-buildx-action
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v1
+            - name: Build action image
               run: make docker-build
-            - name: Test image
+              env:
+                DOCKER_BUILDKIT: 1
+                PLATFORM: "${{ matrix.platform }}"
+            - name: Build action image
               run: make test
+              env:
+                DOCKER_BUILDKIT: 1
+                COMPOSE_DOCKER_CLI_BUILD: 1
+                PLATFORM: "${{ matrix.platform }}"
