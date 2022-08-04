@@ -1,15 +1,56 @@
-# Because 1.62.0-alpine3.16 does not have a build for arm/v7
-FROM rust:1.62.0-slim as build-env
+# See: https://www.docker.com/blog/faster-multi-platform-builds-dockerfile-cross-compilation-guide/
+
+FROM --platform=x86_64 rust:1.62-alpine3.16 as build-env-x86_64-musl
+
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
+ARG TARGETARCH
+ARG TARGETVARIANT
 
 WORKDIR /workspace
 
-RUN apk add --no-cache curl musl-dev openssl-dev && \
-    curl -s -L -# -o ./Horust.tar.gz https://github.com/FedericoPonzi/Horust/archive/c6a4cedb5f53836f14d12fd809272fdac9c8969b.tar.gz && \
-    tar -C ./ --strip-components=1 -xzf ./Horust.tar.gz && \
-    # https://users.rust-lang.org/t/sigsegv-with-program-linked-against-openssl-in-an-alpine-container/52172
-    RUSTFLAGS="-C target-feature=-crt-static" cargo build --release
+ADD https://github.com/FedericoPonzi/Horust/archive/c6a4cedb5f53836f14d12fd809272fdac9c8969b.tar.gz Horust.tar.gz
+RUN echo "Building arch: ${TARGETARCH}, variant: ${TARGETVARIANT} for ${TARGETPLATFORM} on ${BUILDPLATFORM}" && \
+    if [ "${TARGETARCH}" = "amd64" ]; then \
+        apk add --no-cache musl-dev openssl-dev; \
+        tar -C ./ --strip-components=1 -xzf ./Horust.tar.gz; \
+        # https://users.rust-lang.org/t/sigsegv-with-program-linked-against-openssl-in-an-alpine-container/52172
+        RUSTFLAGS="-C target-feature=-crt-static" cargo build --release; \
+    else \
+        mkdir -p /workspace/target/release/; \
+        # provide a fake file for Docker copy to suceess
+        touch /workspace/target/release/horust; \
+    fi
 
-FROM alpine:3.16 as build-env-sasl
+# Because rust:1.62-alpine3.16 does not have a build for arm/v7 but arm32v7/rust:1.62-alpine3.16 has it
+# fetch the vendor with the builder platform to avoid qemu issues (https://github.com/docker/buildx/issues/395)
+FROM --platform=x86_64 blackdex/rust-musl:armv7-musleabihf-stable-1.62.1 as build-env-horust
+
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
+ARG TARGETARCH
+ARG TARGETVARIANT
+
+WORKDIR /workspace
+
+COPY --from=build-env-x86_64-musl /workspace/target/release/horust /workspace/horust_x86_64
+
+ADD https://github.com/FedericoPonzi/Horust/archive/c6a4cedb5f53836f14d12fd809272fdac9c8969b.tar.gz Horust.tar.gz
+RUN echo "Building arch: ${TARGETARCH}, variant: ${TARGETVARIANT} for ${TARGETPLATFORM} on ${BUILDPLATFORM}" && \
+    if [ "${TARGETARCH}${TARGETVARIANT}" = "armv7" ]; then \
+        tar -C ./ --strip-components=1 -xzf ./Horust.tar.gz; \
+        # https://users.rust-lang.org/t/sigsegv-with-program-linked-against-openssl-in-an-alpine-container/52172
+        RUSTFLAGS="-C target-feature=-crt-static" cargo build --release --target=armv7-unknown-linux-musleabihf; \
+        mv /workspace/target/armv7-unknown-linux-musleabihf/release/horust /workspace/horust; \
+    else \
+        mv /workspace/horust_x86_64 /workspace/horust; \
+    fi
+
+# fetch the vendor with the builder platform to avoid qemu issues (https://github.com/docker/buildx/issues/395)
+FROM --platform=$TARGETPLATFORM alpine:3.16 as build-env-sasl
+
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
 
 WORKDIR /workspace
 
@@ -24,10 +65,13 @@ RUN apk add --no-cache --update alpine-sdk && \
     apk add --no-cache gdbm-dev openssl1.1-compat-dev linux-pam-dev py3-sphinx sqlite-dev openldap-dev automake autoconf libtool && \
     abuild -F && \
     mv /root/.abuild/sudo-bot@wdes.fr-*.rsa.pub /root/packages/${RSA_PRIVATE_KEY_NAME}.pub && \
-    mv /root/.abuild/sudo-bot@wdes.fr-*.rsa /root/packages/${RSA_PRIVATE_KEY_NAME} && \
-    abuild-sign -k /root/packages/${RSA_PRIVATE_KEY_NAME} /root/packages/x86_64/APKINDEX.tar.gz
+    mv /root/.abuild/sudo-bot@wdes.fr-*.rsa /root/packages/${RSA_PRIVATE_KEY_NAME}
 
-FROM alpine:3.16
+# fetch the vendor with the builder platform to avoid qemu issues (https://github.com/docker/buildx/issues/395)
+FROM --platform=$TARGETPLATFORM alpine:3.16
+
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
 
 # See: https://www.openldap.org/software/release/changes.html
 # See: https://git.openldap.org/openldap/openldap/-/tree/OPENLDAP_REL_ENG_2_6_3
@@ -42,7 +86,7 @@ ARG BUILD_DATE
 ENV LDAP_LOG_LEVEL=0
 ENV LDAP_NOFILE=1024
 
-COPY --from=build-env /workspace/target/release/horust /sbin/horust
+COPY --from=build-env-horust /workspace/horust /usr/bin/horust
 COPY --from=build-env-sasl /root/packages/ /root/packages/
 RUN apk add --no-cache --update \
     # https://github.com/mischov/meeseeks/issues/98#issuecomment-636615680
@@ -70,7 +114,7 @@ RUN apk add --no-cache --update \
         # Enable ldapi:///
         mkdir /var/lib/openldap/run && \
         touch /var/lib/openldap/run/ldapi && \
-    /sbin/horust --version && \
+    horust --version && \
     # Add dependencies that the next step can not add without a network repo
     apk add --no-cache linux-pam sqlite-libs && \
     echo '/root/packages/' > /root/packages/repositories && \
