@@ -11,6 +11,7 @@ on:
 
 env:
     IMAGE_TAG: docker.io/botsudo/docker-openldap:latest
+    PLATFORM: "linux/amd64,linux/arm/v7"
 
 jobs:
   push_to_registry:
@@ -29,10 +30,23 @@ jobs:
             username: ${{ secrets.DOCKER_REPOSITORY_LOGIN }}
             password: ${{ secrets.DOCKER_REPOSITORY_PASSWORD }}
 
-        - name: Build image
+        # https://github.com/docker/setup-qemu-action
+        - name: Set up QEMU
+          uses: docker/setup-qemu-action@v1
+        # https://github.com/docker/setup-buildx-action
+        - name: Set up Docker Buildx
+          uses: docker/setup-buildx-action@v1
+
+        - name: Build action image
           run: make docker-build
-        - name: Test image
+          env:
+            DOCKER_BUILDKIT: 1
+
+        - name: Build action image
           run: make test
+          env:
+            DOCKER_BUILDKIT: 1
+            COMPOSE_DOCKER_CLI_BUILD: 1
 
         #- name: Sign and push docker image
         #  uses: sudo-bot/action-docker-sign@latest
