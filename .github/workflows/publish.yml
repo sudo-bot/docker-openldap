@@ -62,8 +62,6 @@ jobs:
 
         - name: Pull multi-platform image pushed by Docker buildx
           run: docker pull $IMAGE_TAG
-        - name: Push to GHCR
-          run: make docker-push
         - name: Tag for GHCR
           run: make docker-tag-ghcr
         - name: Login to GitHub Container Registry
