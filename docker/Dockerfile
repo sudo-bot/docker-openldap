@@ -1,4 +1,5 @@
-FROM rust:1.62.0-alpine3.16 as build-env
+# Because 1.62.0-alpine3.16 does not have a build for arm/v7
+FROM rust:1.62.0-slim as build-env
 
 WORKDIR /workspace
 
