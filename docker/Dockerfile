@@ -138,19 +138,32 @@ COPY docker-entrypoint.sh /
 
 # Metadata
 LABEL org.label-schema.vendor="Sudo-Bot" \
-    org.label-schema.url="https://www.openldap.org/" \
+    org.label-schema.url="https://github.com/sudo-bot/docker-openldap#readme" \
     org.label-schema.name="docker-openldap" \
-    org.label-schema.description="An openldap image" \
+    org.label-schema.description="An OpenLDAP image" \
     org.label-schema.version=${RELEASE_VERSION} \
     org.label-schema.vcs-url="https://github.com/sudo-bot/docker-openldap.git" \
     org.label-schema.vcs-ref=${VCS_REF} \
     org.label-schema.build-date=${BUILD_DATE} \
-    org.label-schema.docker.schema-version="1.0"
+    org.label-schema.docker.schema-version="1.0" \
+    \
+    com.docker.extension.publisher-url="https://github.com/sudo-bot" \
+    \
+    org.opencontainers.image.title="Docker OpenLDAP server" \
+    org.opencontainers.image.authors="williamdes@wdes.fr" \
+    org.opencontainers.image.url="https://github.com/sudo-bot/docker-openldap#readme" \
+    org.opencontainers.image.documentation="https://github.com/sudo-bot/docker-openldap#readme" \
+    org.opencontainers.image.source="https://github.com/sudo-bot/docker-openldap" \
+    org.opencontainers.image.vendor="Sudo-Bot" \
+    org.opencontainers.image.licenses="MPL-2.0" \
+    org.opencontainers.image.created=${BUILD_DATE} \
+    org.opencontainers.image.version=${RELEASE_VERSION} \
+    org.opencontainers.image.revision=${VCS_REF} \
+    org.opencontainers.image.ref.name="latest"
 
 # Expose default ldap and ldaps ports
 EXPOSE 389 636
 
-VOLUME ["/ldif", "/var/lib/openldap/openldap-data"]
-VOLUME ["/ldif", "/var/lib/openldap/openldap-data"]
+VOLUME ["/var/lib/openldap/openldap-data"]
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
