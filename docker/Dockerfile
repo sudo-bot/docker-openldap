@@ -30,8 +30,8 @@ ARG BUILDPLATFORM
 # See: https://www.openldap.org/software/release/changes.html
 # See: https://git.openldap.org/openldap/openldap/-/tree/OPENLDAP_REL_ENG_2_6_3
 # See: https://pkgs.alpinelinux.org/packages?name=openldap&branch=edge
-ARG RELEASE_VERSION=2.6.3-r0
-ARG CYRUS_SASL_VERSION=2.1.28-r0
+ARG RELEASE_VERSION=2.6.3-r6
+ARG CYRUS_SASL_VERSION=2.1.28-r3
 
 # Metadata params
 ARG VCS_REF
