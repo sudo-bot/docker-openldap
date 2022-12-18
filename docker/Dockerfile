@@ -16,7 +16,7 @@ RUN apk add --no-cache --update alpine-sdk && \
     mkdir /root/.abuild && \
     echo -e '\nPACKAGER="Sudo Bot <sudo-bot@wdes.fr>"' >> /root/.abuild/abuild.conf && \
     abuild-keygen -a -n && \
-    apk add --no-cache gdbm-dev openssl1.1-compat-dev linux-pam-dev py3-sphinx sqlite-dev openldap-dev automake autoconf libtool && \
+    apk add --no-cache gdbm-dev openssl-dev linux-pam-dev py3-sphinx sqlite-dev openldap-dev automake autoconf libtool && \
     abuild -F && \
     mv /root/.abuild/sudo-bot@wdes.fr-*.rsa.pub /root/packages/${RSA_PRIVATE_KEY_NAME}.pub && \
     mv /root/.abuild/sudo-bot@wdes.fr-*.rsa /root/packages/${RSA_PRIVATE_KEY_NAME}
@@ -48,6 +48,7 @@ RUN apk add --no-cache --update \
     openldap-clients \
     libsasl curl \
     syslog-ng \
+    libcrypto1.1 \
     openldap-back-mdb openldap-back-sql \
     openldap-passwd-sha2 openldap-passwd-argon2 openldap-passwd-pbkdf2 \
     openldap-overlay-otp openldap-overlay-ppolicy openldap-overlay-proxycache \

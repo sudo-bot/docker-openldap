@@ -3,7 +3,7 @@
 # Source: https://gitlab.alpinelinux.org/alpine/aports/-/merge_requests/36232
 pkgname=cyrus-sasl
 pkgver=2.1.28
-pkgrel=0
+pkgrel=3
 pkgdesc="Cyrus Simple Authentication Service Layer (SASL)"
 url="https://www.cyrusimap.org/sasl/"
 arch="all"
@@ -22,7 +22,7 @@ subpackages="
 # use heimdal to avoid circular dep: cyrus-sasl -> krb5 -> openldap -> cyrus-sasl
 makedepends="
 	gdbm-dev
-	openssl1.1-compat-dev
+	openssl-dev>3
 	py3-sphinx
 	sqlite-dev
 	openldap-dev
