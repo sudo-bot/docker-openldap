@@ -1,7 +1,7 @@
 # See: https://www.docker.com/blog/faster-multi-platform-builds-dockerfile-cross-compilation-guide/
 
 # fetch the vendor with the builder platform to avoid qemu issues (https://github.com/docker/buildx/issues/395)
-FROM --platform=$TARGETPLATFORM alpine:3.16 as build-env-sasl
+FROM --platform=$TARGETPLATFORM alpine:3.17 as build-env-sasl
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
@@ -22,7 +22,7 @@ RUN apk add --no-cache --update alpine-sdk && \
     mv /root/.abuild/sudo-bot@wdes.fr-*.rsa /root/packages/${RSA_PRIVATE_KEY_NAME}
 
 # fetch the vendor with the builder platform to avoid qemu issues (https://github.com/docker/buildx/issues/395)
-FROM --platform=$TARGETPLATFORM alpine:3.16
+FROM --platform=$TARGETPLATFORM alpine:3.17
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
