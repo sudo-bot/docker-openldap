@@ -1,77 +1,5 @@
 # See: https://www.docker.com/blog/faster-multi-platform-builds-dockerfile-cross-compilation-guide/
 
-FROM --platform=x86_64 rust:1.62-alpine3.16 as build-env-x86_64-musl
-
-ARG TARGETPLATFORM
-ARG BUILDPLATFORM
-ARG TARGETARCH
-ARG TARGETVARIANT
-
-WORKDIR /workspace
-
-ADD https://github.com/FedericoPonzi/Horust/archive/c6a4cedb5f53836f14d12fd809272fdac9c8969b.tar.gz Horust.tar.gz
-RUN echo "Building arch: ${TARGETARCH}, variant: ${TARGETVARIANT} for ${TARGETPLATFORM} on ${BUILDPLATFORM}" && \
-    if [ "${TARGETARCH}" = "amd64" ]; then \
-        apk add --no-cache musl-dev openssl-dev; \
-        tar -C ./ --strip-components=1 -xzf ./Horust.tar.gz; \
-        # https://users.rust-lang.org/t/sigsegv-with-program-linked-against-openssl-in-an-alpine-container/52172
-        RUSTFLAGS="-C target-feature=-crt-static" cargo build --release; \
-    else \
-        mkdir -p /workspace/target/release/; \
-        # provide a fake file for Docker copy to suceess
-        touch /workspace/target/release/horust; \
-    fi
-
-# Because rust:1.62-alpine3.16 does not have a build for arm/v7 but arm32v7/rust:1.62-alpine3.16 has it
-# fetch the vendor with the builder platform to avoid qemu issues (https://github.com/docker/buildx/issues/395)
-FROM --platform=x86_64 blackdex/rust-musl:aarch64-musl-stable-1.62.1  as build-env-aarch64-musl
-
-ARG TARGETPLATFORM
-ARG BUILDPLATFORM
-ARG TARGETARCH
-ARG TARGETVARIANT
-
-WORKDIR /workspace
-
-ADD https://github.com/FedericoPonzi/Horust/archive/c6a4cedb5f53836f14d12fd809272fdac9c8969b.tar.gz Horust.tar.gz
-RUN echo "Building arch: ${TARGETARCH}, variant: ${TARGETVARIANT} for ${TARGETPLATFORM} on ${BUILDPLATFORM}" && \
-    if [ "${TARGETARCH}" = "arm64" ]; then \
-        tar -C ./ --strip-components=1 -xzf ./Horust.tar.gz; \
-        # https://users.rust-lang.org/t/sigsegv-with-program-linked-against-openssl-in-an-alpine-container/52172
-        RUSTFLAGS="-C target-feature=-crt-static" cargo build --release --target=aarch64-unknown-linux-musl; \
-        mv /workspace/target/aarch64-unknown-linux-musl/release/horust /workspace/horust_aarch64; \
-    else \
-        # provide a fake file for Docker copy to suceess
-        touch /workspace/horust_aarch64; \
-    fi
-
-# Because rust:1.62-alpine3.16 does not have a build for arm/v7 but arm32v7/rust:1.62-alpine3.16 has it
-# fetch the vendor with the builder platform to avoid qemu issues (https://github.com/docker/buildx/issues/395)
-FROM --platform=x86_64 blackdex/rust-musl:armv7-musleabihf-stable-1.62.1 as build-env-horust
-
-ARG TARGETPLATFORM
-ARG BUILDPLATFORM
-ARG TARGETARCH
-ARG TARGETVARIANT
-
-WORKDIR /workspace
-
-COPY --from=build-env-x86_64-musl /workspace/target/release/horust /workspace/horust_x86_64
-COPY --from=build-env-aarch64-musl /workspace/horust_aarch64 /workspace/horust_aarch64
-
-ADD https://github.com/FedericoPonzi/Horust/archive/c6a4cedb5f53836f14d12fd809272fdac9c8969b.tar.gz Horust.tar.gz
-RUN echo "Building arch: ${TARGETARCH}, variant: ${TARGETVARIANT} for ${TARGETPLATFORM} on ${BUILDPLATFORM}" && \
-    if [ "${TARGETARCH}${TARGETVARIANT}" = "armv7" ]; then \
-        tar -C ./ --strip-components=1 -xzf ./Horust.tar.gz; \
-        # https://users.rust-lang.org/t/sigsegv-with-program-linked-against-openssl-in-an-alpine-container/52172
-        RUSTFLAGS="-C target-feature=-crt-static" cargo build --release --target=armv7-unknown-linux-musleabihf; \
-        mv /workspace/target/armv7-unknown-linux-musleabihf/release/horust /workspace/horust; \
-    elif [ "${TARGETARCH}${TARGETVARIANT}" = "arm64" ]; then \
-        mv /workspace/horust_aarch64 /workspace/horust; \
-    else \
-        mv /workspace/horust_x86_64 /workspace/horust; \
-    fi
-
 # fetch the vendor with the builder platform to avoid qemu issues (https://github.com/docker/buildx/issues/395)
 FROM --platform=$TARGETPLATFORM alpine:3.16 as build-env-sasl
 
@@ -112,7 +40,6 @@ ARG BUILD_DATE
 ENV LDAP_LOG_LEVEL=0
 ENV LDAP_NOFILE=1024
 
-COPY --from=build-env-horust /workspace/horust /usr/bin/horust
 COPY --from=build-env-sasl /root/packages/ /root/packages/
 RUN apk add --no-cache --update \
     # https://github.com/mischov/meeseeks/issues/98#issuecomment-636615680
@@ -127,6 +54,7 @@ RUN apk add --no-cache --update \
     openldap-overlay-refint openldap-overlay-remoteauth openldap-overlay-retcode \
     openldap-overlay-rwm openldap-overlay-seqmod openldap-overlay-sssvlv \
     openldap-overlay-syncprov openldap-overlay-translucent openldap-overlay-unique openldap-overlay-valsort && \
+    apk add --no-cache --repository=https://dl-cdn.alpinelinux.org/alpine/edge/testing horust && \
     mkdir -p /run/openldap /var/lib/openldap/openldap-data && \
     rm -rf /var/cache/apk/* && \
     # Remove some schemas we are not friends with
