@@ -1,7 +1,7 @@
 # See: https://www.docker.com/blog/faster-multi-platform-builds-dockerfile-cross-compilation-guide/
 
 # fetch the vendor with the builder platform to avoid qemu issues (https://github.com/docker/buildx/issues/395)
-FROM --platform=$TARGETPLATFORM alpine:3.17 as build-env-sasl
+FROM --platform=$TARGETPLATFORM alpine:3.18 as build-env-sasl
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
@@ -22,16 +22,17 @@ RUN apk add --no-cache --update alpine-sdk && \
     mv /root/.abuild/sudo-bot@wdes.fr-*.rsa /root/packages/${RSA_PRIVATE_KEY_NAME}
 
 # fetch the vendor with the builder platform to avoid qemu issues (https://github.com/docker/buildx/issues/395)
-FROM --platform=$TARGETPLATFORM alpine:3.17
+FROM --platform=$TARGETPLATFORM alpine:3.18
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 
 # See: https://www.openldap.org/software/release/changes.html
-# See: https://git.openldap.org/openldap/openldap/-/tree/OPENLDAP_REL_ENG_2_6_3
-# See: https://pkgs.alpinelinux.org/packages?name=openldap&branch=edge
-ARG RELEASE_VERSION=2.6.3-r6
-ARG CYRUS_SASL_VERSION=2.1.28-r3
+# See: https://git.openldap.org/openldap/openldap/-/tree/OPENLDAP_REL_ENG_2_6_5
+# See: https://pkgs.alpinelinux.org/packages?name=openldap&branch=v3.18
+ARG RELEASE_VERSION=2.6.5-r0
+# See: https://pkgs.alpinelinux.org/packages?name=cyrus-sasl&branch=v3.18
+ARG CYRUS_SASL_VERSION=2.1.28-r4
 
 # Metadata params
 ARG VCS_REF

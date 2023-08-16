@@ -3,7 +3,7 @@
 # Source: https://gitlab.alpinelinux.org/alpine/aports/-/merge_requests/36232
 pkgname=cyrus-sasl
 pkgver=2.1.28
-pkgrel=3
+pkgrel=4
 pkgdesc="Cyrus Simple Authentication Service Layer (SASL)"
 url="https://www.cyrusimap.org/sasl/"
 arch="all"
