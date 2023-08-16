@@ -69,7 +69,7 @@ RUN apk add --no-cache --update \
         # Enable ldapi:///
         mkdir /var/lib/openldap/run && \
         touch /var/lib/openldap/run/ldapi && \
-    horust --version && \
+    horust --help && \
     # Add dependencies that the next step can not add without a network repo
     apk add --no-cache linux-pam sqlite-libs && \
     echo '/root/packages/' > /root/packages/repositories && \
@@ -105,6 +105,7 @@ LABEL org.label-schema.vendor="Sudo-Bot" \
     com.docker.extension.publisher-url="https://github.com/sudo-bot" \
     \
     org.opencontainers.image.title="Docker OpenLDAP server" \
+    org.opencontainers.image.description="An OpenLDAP image" \
     org.opencontainers.image.authors="williamdes@wdes.fr" \
     org.opencontainers.image.url="https://github.com/sudo-bot/docker-openldap#readme" \
     org.opencontainers.image.documentation="https://github.com/sudo-bot/docker-openldap#readme" \
