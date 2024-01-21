@@ -4,6 +4,7 @@ services:
     openldap:
         build: .
         command: ldap
+        hostname: ldap.server.intranet
         restart: on-failure:5
         mem_limit: 256M
         mem_reservation: 100M
