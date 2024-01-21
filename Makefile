@@ -7,7 +7,7 @@ PLATFORM ?= linux/amd64
 ACTION ?= load
 PROGRESS_MODE ?= plain
 
-.PHONY: update-tags docker-build docker-push
+.PHONY: update-tags docker-build docker-push test-certificates
 
 docker-build:
 	# https://github.com/docker/buildx#building
@@ -38,3 +38,6 @@ update-tags:
 test:
 	BUILDKIT_PROGRESS=plain docker compose -f ./docker/docker-compose.test.yml down
 	BUILDKIT_PROGRESS=plain docker compose -f ./docker/docker-compose.test.yml up --build --abort-on-container-exit --exit-code-from=sut
+
+test-certificates:
+	./docker/tests/make-certs.sh
