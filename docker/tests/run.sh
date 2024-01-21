@@ -5,6 +5,7 @@
 ##
 
 LDAP_URI="ldap://ldap.server.intranet"
+LDAPS_URI="ldaps://ldap.server.intranet"
 
 seedFile() {
     ldapadd -H ${LDAP_URI} -D "cn=admin,dc=example,dc=org" -w admin < "/tests/data/$1.ldiff"
@@ -89,7 +90,7 @@ echo 'Login as email 5'
 echo -e "\tUsing secure STARTTLS auth"
 ldapwhoami -ZZ -H ${LDAP_URI} -D "mail=elana@caldin.eu,o=caldin.eu,ou=people,dc=example,dc=org" -w 'bandedetsylish'
 echo -e "\tUsing secure SSL auth"
-ldapwhoami -H ldaps://openldap -D "mail=elana@caldin.eu,o=caldin.eu,ou=people,dc=example,dc=org" -w 'bandedetsylish'
+ldapwhoami -H ${LDAPS_URI} -D "mail=elana@caldin.eu,o=caldin.eu,ou=people,dc=example,dc=org" -w 'bandedetsylish'
 echo -e "\tUsing simple auth"
 ldapwhoami -H ${LDAP_URI} -D "mail=elana@caldin.eu,o=caldin.eu,ou=people,dc=example,dc=org" -w 'bandedetsylish'
 echo -e "\tUsing SASL auth"
