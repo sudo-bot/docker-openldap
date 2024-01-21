@@ -36,5 +36,5 @@ update-tags:
 	git push origin refs/tags/latest -f
 
 test:
-	BUILDKIT_PROGRESS=plain docker-compose -f ./docker/docker-compose.test.yml down
-	BUILDKIT_PROGRESS=plain docker-compose -f ./docker/docker-compose.test.yml up --build --abort-on-container-exit --exit-code-from=sut
+	BUILDKIT_PROGRESS=plain docker compose -f ./docker/docker-compose.test.yml down
+	BUILDKIT_PROGRESS=plain docker compose -f ./docker/docker-compose.test.yml up --build --abort-on-container-exit --exit-code-from=sut
