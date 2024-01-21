@@ -25,11 +25,11 @@ jobs:
             - name: Build docker image
               run: make docker-build
               env:
-                DOCKER_BUILDKIT: 1
-                PLATFORM: "${{ matrix.platform }}"
+                  DOCKER_BUILDKIT: 1
+                  PLATFORM: "${{ matrix.platform }}"
             - name: Test docker image
               run: make test
               env:
-                DOCKER_BUILDKIT: 1
-                COMPOSE_DOCKER_CLI_BUILD: 1
-                PLATFORM: "${{ matrix.platform }}"
+                  DOCKER_BUILDKIT: 1
+                  COMPOSE_DOCKER_CLI_BUILD: 1
+                  PLATFORM: "${{ matrix.platform }}"
