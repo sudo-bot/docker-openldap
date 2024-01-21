@@ -49,7 +49,7 @@ RUN apk add --no-cache --update \
     openldap-clients \
     libsasl curl \
     syslog-ng \
-    libcrypto1.1 \
+    openssl-dev \
     openldap-back-mdb openldap-back-sql \
     openldap-passwd-sha2 openldap-passwd-argon2 openldap-passwd-pbkdf2 \
     openldap-overlay-otp openldap-overlay-ppolicy openldap-overlay-proxycache \
