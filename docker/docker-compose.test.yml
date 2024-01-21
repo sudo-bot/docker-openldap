@@ -39,9 +39,9 @@ services:
             # Add ldaps:/// to SSL listen
             LDAP_LISTEN_URLS: "ldap:/// ldapi:/// ldaps:///"
         volumes:
-          - ./tests/data/ca.pem:/data/ca.pem:ro
-          - ./tests/data/server-cert.pem:/data/server-cert.pem:ro
-          - ./tests/data/server-key.pem:/data/server-key.pem:ro
+          - ./tests/data/ldap.server.intranet_ca.cer:/data/ca.pem:ro
+          - ./tests/data/ldap.server.intranet.cer:/data/server-cert.pem:ro
+          - ./tests/data/ldap.server.intranet.key:/data/server-key.pem:ro
 
     sut:
         depends_on:
@@ -50,7 +50,7 @@ services:
         build: .
         volumes:
           - ./tests/:/tests:ro
-          - ./tests/data/ca.pem:/data/ca.pem:ro
+          - ./tests/data/ldap.server.intranet_ca.cer:/data/ca.pem:ro
         entrypoint: /tests/run.sh
         environment:
             LDAPTLS_CACERT: /data/ca.pem
